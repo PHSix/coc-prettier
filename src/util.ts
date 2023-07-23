@@ -1,11 +1,12 @@
-import * as os from "os"
-import * as path from "path"
-import { Uri, workspace } from "coc.nvim"
-import { PrettierVSCodeConfig } from "./types"
+import * as os from "os";
+import * as path from "path";
+import * as semver from "semver";
+import { Uri, workspace } from "coc.nvim";
+import { PrettierVSCodeConfig } from "./types";
 
 export function getWorkspaceRelativePath(
   filePath: string,
-  pathToResolve: string
+  pathToResolve: string,
 ) {
   // In case the user wants to use ~/.prettierrc on Mac
   if (
@@ -13,25 +14,49 @@ export function getWorkspaceRelativePath(
     pathToResolve.indexOf("~") === 0 &&
     os.homedir()
   ) {
-    return pathToResolve.replace(/^~(?=$|\/|\\)/, os.homedir())
+    return pathToResolve.replace(/^~(?=$|\/|\\)/, os.homedir());
   }
 
   if (workspace.workspaceFolders) {
-    const folder = workspace.getWorkspaceFolder(Uri.file(filePath).toString())
+    const folder = workspace.getWorkspaceFolder(Uri.file(filePath).toString());
     return folder
       ? path.isAbsolute(pathToResolve)
         ? pathToResolve
         : path.join(Uri.parse(folder.uri).fsPath, pathToResolve)
-      : undefined
+      : undefined;
   }
 }
 
 export function getConfig(uri?: Uri): PrettierVSCodeConfig {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const config = workspace.getConfiguration(
-    'prettier',
-    uri ? uri.toString() : undefined
-  ) as PrettierVSCodeConfig
+    "prettier",
+    uri ? uri.toString() : void 0,
+  ) as unknown as PrettierVSCodeConfig;
 
-  return config as PrettierVSCodeConfig
+  // Some settings are disabled for untrusted workspaces
+  // because they can be used for bad things.
+  // if (!workspace.isTrusted) {
+  //   const newConfig = {
+  //     ...config,
+  //     prettierPath: undefined,
+  //     configPath: undefined,
+  //     ignorePath: ".prettierignore",
+  //     documentSelectors: [],
+  //     useEditorConfig: false,
+  //     withNodeModules: false,
+  //     resolveGlobalModules: false,
+  //   };
+  //   return newConfig;
+  // }
+
+  return config;
+}
+
+export function isAboveV3(version: string | null): boolean {
+  const parsedVersion = semver.parse(version);
+  if (!parsedVersion) {
+    throw new Error("Invalid version");
+  }
+  return parsedVersion.major >= 3;
 }
