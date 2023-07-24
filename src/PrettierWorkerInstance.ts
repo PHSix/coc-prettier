@@ -19,7 +19,7 @@ const worker = new Worker(
   url.pathToFileURL(
     path.resolve(
       extensions.all.find((e) => e.id === "coc-prettier").extensionPath,
-      "lib/worker/prettier-instance-worker.js",
+      "src/worker/prettier-instance-worker.js",
     ),
   ),
 );

@@ -1,3 +1,20 @@
+# What do I do after forked?
+
+My works contains fork this repository from [neoclide/coc-prettier](https://github.com/neoclide/coc-prettier) and copy the `src` code from [prettier/prettier-vscode](https://github.com/prettier/prettier-vscode) repository.
+I only did the work of translating `vscode api` to `coc api` to ensure this extension works as `vscode-prettier` (Because I saw `coc-prettier` do the same before.) to fix the errors caused by [prettier v3.0 api update](https://prettier.io/blog/2023/07/05/3.0.0.html).
+
+# How to intall?
+
+Because I don't public this repository to npmjs. So if someone want to install this extension please use your vim plugin manager, like `vim-plug`.
+
+```viml
+Plug 'PHSix/coc-prettier'
+```
+
+or you can clone to local and append the repository path to `runtimepath`.
+
+---
+
 # Prettier formatter for coc.nvim
 
 Fork of [prettier-vscode](https://github.com/prettier/prettier-vscode) to work
